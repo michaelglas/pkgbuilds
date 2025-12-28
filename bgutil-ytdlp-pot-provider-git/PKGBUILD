@@ -1,0 +1,48 @@
+pkgname=bgutil-ytdlp-pot-provider-git
+pkgrel=1
+pkgdesc='Proof-of-origin token provider plugin for yt-dlp'
+pkgver=1.2.2.r4.g089a565
+arch=(any)
+url=https://github.com/Brainicism/bgutil-ytdlp-pot-provider
+license=(GPL-3.0-only)
+depends=(python yt-dlp nodejs)
+makedepends=(npm)
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=(git+"${url}".git)
+sha256sums=('SKIP')
+
+pkgver() {
+    git -C "${pkgname%-git}" describe --long --tags --abbrev=7 --exclude=nightly | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+    # Clean out old wheels etc.
+    git -C "${pkgname%-git}" clean -dfx
+
+}
+
+build() {
+    cd "${pkgname%-git}/plugin"
+    python -m build --wheel --no-isolation
+    cd ../server
+    npm install
+    npx tsc
+    npm pack
+}
+
+package() {
+    cd "${pkgname%-git}/plugin"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+
+    cd ../server
+    npm install -g --prefix "$pkgdir"/usr ./${pkgname%-git}-*.tgz
+
+    chown -R root:root "$pkgdir"
+
+    cd ../../..
+
+    install -d "$pkgdir"/usr/lib/systemd/user/
+
+    install -m 644 ./bgutil-ytdlp-pot-provider.service ./proxy-to-bgutil-ytdlp-pot-provider.socket ./proxy-to-bgutil-ytdlp-pot-provider.service "$pkgdir"/usr/lib/systemd/user/
+}

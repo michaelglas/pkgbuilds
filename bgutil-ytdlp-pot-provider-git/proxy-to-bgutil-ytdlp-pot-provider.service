@@ -1,0 +1,9 @@
+[Unit]
+Requires=bgutil-ytdlp-pot-provider.service
+After=bgutil-ytdlp-pot-provider.service
+Requires=proxy-to-bgutil-ytdlp-pot-provider.socket
+After=proxy-to-bgutil-ytdlp-pot-provider.socket
+
+[Service]
+Type=notify
+ExecStart=/usr/lib/systemd/systemd-socket-proxyd localhost:4417

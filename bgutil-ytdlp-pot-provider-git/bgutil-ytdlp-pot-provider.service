@@ -1,0 +1,7 @@
+[Unit]
+After=network.target
+
+[Service]
+Type=exec
+ExecStart=node /usr/lib/node_modules/bgutil-ytdlp-pot-provider/build/main.js --port 4417
+ExecStartPost=sleep 1
