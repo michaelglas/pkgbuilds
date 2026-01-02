@@ -18,17 +18,17 @@ pkgver() {
 
 prepare() {
     # Clean out old wheels etc.
-    git -C "${pkgname%-git}" clean -dfx
+    git -C "mpv_wrapper" clean -dfx
 
 }
 
 build() {
-    cd "${pkgname%-git}"
+    cd "mpv_wrapper"
     python -m build --wheel --no-isolation
 }
 
 package() {
-    cd "${pkgname%-git}"
+    cd "mpv_wrapper"
     python -m installer --destdir="$pkgdir" dist/*.whl
 
     install -m 644 ./mpv_wrapper.desktop "pkgdir"/usr/share/applications/
