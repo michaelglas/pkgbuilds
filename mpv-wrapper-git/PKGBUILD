@@ -1,0 +1,35 @@
+pkgname=mpv-wrapper-git
+pkgrel=1
+pkgdesc='Download videos using yt-dlp and view with mpv'
+pkgver=bad86c5
+arch=(any)
+url=https://github.com/michaelglas/mpv_wrapper
+license=(CC0-1.0)
+depends=(python yt-dlp mpv)
+makedepends=(python)
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+source=(git+"${url}".git)
+sha256sums=('SKIP')
+
+pkgver() {
+    git rev-parse --short HEAD
+}
+
+prepare() {
+    # Clean out old wheels etc.
+    git -C "${pkgname%-git}" clean -dfx
+
+}
+
+build() {
+    cd "${pkgname%-git}"
+    python -m build --wheel --no-isolation
+}
+
+package() {
+    cd "${pkgname%-git}"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+
+    install -m 644 ./mpv_wrapper.desktop "pkgdir"/usr/share/applications/
+}
