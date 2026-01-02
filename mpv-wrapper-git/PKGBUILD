@@ -31,5 +31,7 @@ package() {
     cd "mpv_wrapper"
     python -m installer --destdir="$pkgdir" dist/*.whl
 
+    install -d "$pkgdir"/usr/share/applications/
+
     install -m 644 ./mpv_wrapper.desktop "$pkgdir"/usr/share/applications/
 }
